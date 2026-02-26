@@ -9,7 +9,6 @@
 
 # Linker output
 *.ilk
-*.map
 *.exp
 
 # Precompiled Headers
@@ -53,3 +52,6 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+log.txt
+lem_in
