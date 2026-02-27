@@ -13,6 +13,9 @@ FAILED=0
 echo "===== VALGRIND TESTS ====="
 echo ""
 
+#efface le contenu du fichier log.txt
+> log.txt
+
 # Parcours tous les fichiers dans tous les sous-dossiers
 find "$ROOT_DIR" -type f | while read -r file
 do
@@ -36,6 +39,7 @@ do
         echo -e "${RED}FAIL${NC}"
         FAILED=$((FAILED+1))
     fi
+    printf "\n\n\n" >> ./log.txt
 done
 
 echo ""

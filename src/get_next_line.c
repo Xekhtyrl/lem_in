@@ -71,11 +71,25 @@ static int	ft_get_read(int fd, char **line, char **backup, int o)
 	return (1);
 }
 
-char	*get_next_line(int fd)
+void ft_free_backup(int fd, char **backup)
+{
+	if (fd >= 0 && fd < 65536 && backup[fd])
+	{
+		free(backup[fd]);
+		backup[fd] = NULL;
+	}
+}
+
+char	*get_next_line(int fd, int free_backup)
 {
 	char		*line;
 	static char	*backup[65536] = {0};
 
+	if (free_backup)
+	{
+		ft_free_backup(fd, backup);
+		return (NULL);
+	}
 	line = NULL;
 	if (fd >= 0 && fd < 65536 && BUFFER_SIZE >= 1
 		&& !ft_get_read(fd, &line, &(backup[fd]), 0))
@@ -85,3 +99,4 @@ char	*get_next_line(int fd)
 	}
 	return (line);
 }
+

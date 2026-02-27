@@ -2,30 +2,36 @@ CC := gcc
 
 NAME := lem_in
 
-CFLAGS := -Wall -Wextra -Werror -O3 -g
+CFLAGS := -Wall -Wextra -Werror -g
 
-INC_FLAGS := -I includes
+INC_FLAGS := -I includes -I printf -I printf/libft
 
-SRCS := ft_itoa.c get_next_line.c parsing.c main.c\
-		 utils.c libft.c\
+PRINTF_DIR := printf
+PRINTF_LIB := $(PRINTF_DIR)/libftprintf.a
 
-OBJS := ${SRCS:.c=.o}
+SRCS := get_next_line.c parsing.c main.c \
+        utils.c libft.c connectivity.c bfs.c list.c
 
+OBJS := $(SRCS:.c=.o)
 OBJDIR := $(addprefix obj/, $(OBJS))
 
 INCLUDES := includes/lem_in.h includes/get_next_line.h
 
-RM  := rm -f 
+RM := rm -f
 
 all : $(NAME)
 
-$(NAME) : $(OBJDIR)
-	echo "\x1b[34m $1[Compiling Lem_in]\x1b[0m"
-	$(CC) $(MLX_FLAGS) $(INC_FLAGS) $(OBJDIR) $(CFLAGS) -o $(NAME)
-	echo "\x1b[34m $1[Done]\x1b[0m"
+$(PRINTF_LIB):
+	@printf "\033[34m[Compiling printf]\033[0m\n"
+	@$(MAKE) -C $(PRINTF_DIR)
+
+$(NAME): $(OBJDIR) $(PRINTF_LIB)
+	@printf "\033[34m[Compiling lem_in]\033[0m\n"
+	$(CC) $(OBJDIR) $(PRINTF_LIB) $(CFLAGS) $(INC_FLAGS) -o $(NAME)
+	@printf "\033[32m[Done]\033[0m\n"
 
 obj/%.o : src/%.c $(INCLUDES) Makefile
-	mkdir -p obj
+	@mkdir -p obj
 	$(CC) -c $< $(INC_FLAGS) $(CFLAGS) -o $@
 
 leak: all
@@ -33,11 +39,13 @@ leak: all
 
 clean :
 	$(RM) $(OBJDIR)
+	$(MAKE) clean -C $(PRINTF_DIR)
 
 fclean : clean
 	$(RM) $(NAME)
+	$(MAKE) fclean -C $(PRINTF_DIR)
 
 re : fclean all
 
-.PHONY : all clean fclean re libft
+.PHONY : all clean fclean re
 .SILENT :

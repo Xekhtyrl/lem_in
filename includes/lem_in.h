@@ -13,13 +13,6 @@
 #ifndef CUB_H
 # define CUB_H
 
-# include <stdio.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include <fcntl.h>
-# include <math.h>
-# include <sys/time.h>
-
 # include "get_next_line.h"
 
 typedef enum e_room_type {
@@ -36,7 +29,14 @@ typedef struct s_room
 	t_room_type type;
     struct s_room **links;
     int link_count;
+    int visited;
+    int distance;
 } t_room;
+
+typedef struct s_list {
+    t_room* room;
+    struct s_list* next;
+} t_list;
 
 typedef struct s_graph
 {
@@ -54,7 +54,11 @@ typedef struct s_main
 
 /********    get_next_line.c    ********/
 
-char		*get_next_line(int fd);
+char		*get_next_line(int fd, int free_backup);
+
+/*********  printf  */
+
+int	ft_printf(const char *info, ...);
 
 /********    libft.c    ********/
 
@@ -64,6 +68,7 @@ int			ft_free(void *str);
 int			ft_error(char *str);
 void		*ft_malloc(size_t x);
 char	*ft_strdup(char *str);
+int ft_strcmp(char *a, char *b);
 
 
 /********    parsing.c    ********/
@@ -81,6 +86,20 @@ void *free_graph(t_graph *graph);
 int start_with(char *str, char *prefix);
 void print_main(t_main *main);
 int str_count_char(char *str, char c);
+t_room *get_room_by_name(t_graph *graph, char *name);
+int create_link(t_room *a, t_room *b);
 
+/************* connectivity.c */
+
+int check_connectivity(t_graph *graph);
+
+/************* bfs.c */
+int bfs(t_graph* graph, t_room* start, t_room* end);
+
+
+/************* list.c */
+int add_end(t_list** head,  t_room* room);
+t_room* pop_front(t_list** head);
+void free_list(t_list* head);
 
 #endif

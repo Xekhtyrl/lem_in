@@ -73,3 +73,26 @@ void	*ft_malloc(size_t x)
 	x += x;
 	return (NULL);
 }
+
+int str_count_char(char *str, char c)
+{
+	int count = 0;
+	while (*str)
+	{
+		if (*str == c)
+			count++;
+		str++;
+	}
+	return count;
+}
+
+int ft_strcmp(char *a, char *b)
+{
+    while (*a && *b) {
+        if (*a != *b)
+            return (*a - *b);
+        a++;
+        b++;
+    }
+    return (*a - *b);
+}

@@ -32,7 +32,7 @@ int add_room_to_graph(t_main *main, t_room *room)
 	t_graph *graph = &main->graph;
 	t_room **new_rooms = malloc(sizeof(t_room *) * (graph->room_count + 1));
 	if (!new_rooms) {
-		printf("Memory allocation failed while adding room '%s'\n", room->name);
+		ft_printf("Memory allocation failed while adding room '%s'\n", room->name);
 		return (0);
 	}
     for (int i = 0; i < graph->room_count; i++) {
@@ -48,18 +48,54 @@ int add_room_to_graph(t_main *main, t_room *room)
 
 void print_graph(t_graph *graph)
 {
-    printf("Graph has %d rooms:\n", graph->room_count);
+    ft_printf("Graph has %d rooms:\n", graph->room_count);
     for (int i = 0; i < graph->room_count; i++)
     {
         t_room *room = graph->rooms[i];
         char *type_str = (room->type == START) ? "START" : (room->type == END) ? "END" : "SIMPLE";
-        printf("Room %d: %s (%d, %d) Type: %s Links: %d\n", i, room->name, room->x, room->y, type_str, room->link_count);
+        ft_printf("Room %d: %s (%d, %d) Type: %s Links: %d\n", i, room->name, room->x, room->y, type_str, room->link_count);
     }
+}
+
+t_room *get_room_by_name(t_graph *graph, char *name)
+{
+    for (int i = 0; i < graph->room_count; i++)
+    {
+        if (ft_strcmp(graph->rooms[i]->name, name) == 0)
+            return graph->rooms[i];
+    }
+    return NULL;
+}
+
+int create_link(t_room *a, t_room *b)
+{
+    t_room **new_links_a = malloc(sizeof(t_room *) * (a->link_count + 1));
+    t_room **new_links_b = malloc(sizeof(t_room *) * (b->link_count + 1));
+    if (!new_links_a || !new_links_b) {
+        free(new_links_a);
+        free(new_links_b);
+        return (0);
+    }
+    for (int i = 0; i < a->link_count; i++) {
+        new_links_a[i] = a->links[i];
+    }
+    for (int i = 0; i < b->link_count; i++) {
+        new_links_b[i] = b->links[i];
+    }
+    new_links_a[a->link_count] = b;
+    new_links_b[b->link_count] = a;
+    free(a->links);
+    free(b->links);
+    a->links = new_links_a;
+    b->links = new_links_b;
+    a->link_count++;
+    b->link_count++;
+    return (1);
 }
 
 void print_main(t_main *main)
 {
-    printf("Ants: %d\n", main->ants);
+    ft_printf("Ants: %d\n", main->ants);
     print_graph(&main->graph);
 }
 
@@ -72,16 +108,4 @@ int start_with(char *str, char *prefix)
         str++;
     }
     return (1);
-}
-
-int str_count_char(char *str, char c)
-{
-	int count = 0;
-	while (*str)
-	{
-		if (*str == c)
-			count++;
-		str++;
-	}
-	return count;
 }

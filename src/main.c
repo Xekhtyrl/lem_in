@@ -15,11 +15,20 @@ int	main()
     init_main(&main);
 
     if (!parsing(&main)){
-        printf("Parsing failed\n");
+        ft_printf("Parsing failed\n");
         free_graph(&main.graph);
         return 0;
     }
+    if (!check_connectivity(&main.graph)) {
+        free_graph(&main.graph);
+        return 0;
+    }
+    
     print_main(&main);
+
+
+
+
     free_graph(&main.graph);
     return 0;
 }
