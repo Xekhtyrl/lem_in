@@ -4,46 +4,47 @@ NAME := lem_in
 
 CFLAGS := -Wall -Wextra -Werror -g
 
-INC_FLAGS := -I includes -I printf -I printf/libft
 
-PRINTF_DIR := printf
-PRINTF_LIB := $(PRINTF_DIR)/libftprintf.a
+LIBFT_DIR = includes/libft
+LIBFT_LIB = $(LIBFT_DIR)/libft.a
 
-SRCS := get_next_line.c parsing.c main.c \
-        utils.c libft.c connectivity.c bfs.c list.c
+INC_FLAGS := -I includes -I $(LIBFT_DIR)/headers
 
-OBJS := $(SRCS:.c=.o)
-OBJDIR := $(addprefix obj/, $(OBJS))
+SRCS := parsing.c main.c \
+        utils.c connectivity.c bfs.c list.c
 
-INCLUDES := includes/lem_in.h includes/get_next_line.h
+SRC_DIR = src/
+OBJ_DIR = obj/
+OBJS = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
+
 
 RM := rm -f
 
 all : $(NAME)
 
-$(PRINTF_LIB):
-	@printf "\033[34m[Compiling printf]\033[0m\n"
-	@$(MAKE) -C $(PRINTF_DIR)
+$(LIBFT_LIB):
+	@make -C $(LIBFT_DIR)
 
-$(NAME): $(OBJDIR) $(PRINTF_LIB)
+$(NAME): $(LIBFT_LIB) $(OBJS)
 	@printf "\033[34m[Compiling lem_in]\033[0m\n"
-	$(CC) $(OBJDIR) $(PRINTF_LIB) $(CFLAGS) $(INC_FLAGS) -o $(NAME)
+	$(CC) $(OBJS) $(CFLAGS) $(INC_FLAGS) $(LIBFT_LIB) -o $(NAME)
 	@printf "\033[32m[Done]\033[0m\n"
 
-obj/%.o : src/%.c $(INCLUDES) Makefile
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@mkdir -p obj
-	$(CC) -c $< $(INC_FLAGS) $(CFLAGS) -o $@
+	$(CC) $(CFLAGS) -c $< $(INC_FLAGS) -o $@
 
 leak: all
 	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(NAME)
 
 clean :
-	$(RM) $(OBJDIR)
-	$(MAKE) clean -C $(PRINTF_DIR)
+	$(RM) -r $(OBJ_DIR)
+	@make clean -C $(LIBFT_DIR) 
+
 
 fclean : clean
 	$(RM) $(NAME)
-	$(MAKE) fclean -C $(PRINTF_DIR)
+	@make fclean -C $(LIBFT_DIR) 
 
 re : fclean all
 

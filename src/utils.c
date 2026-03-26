@@ -53,18 +53,19 @@ void print_graph(t_graph *graph)
     {
         t_room *room = graph->rooms[i];
         char *type_str = (room->type == START) ? "START" : (room->type == END) ? "END" : "SIMPLE";
-        ft_printf("Room %d: %s (%d, %d) Type: %s Links: %d\n", i, room->name, room->x, room->y, type_str, room->link_count);
+        ft_printf("Room %d: %s (%d, %d) Type: %s Links: %d Visited: %i, Distance: %i\n", i, room->name, room->x, room->y, type_str, room->link_count, room->visited, room->distance);
     }
 }
 
 t_room *get_room_by_name(t_graph *graph, char *name)
 {
+	char *trimName = ft_strtrim(name, "\n\t\v");
     for (int i = 0; i < graph->room_count; i++)
     {
-        if (ft_strcmp(graph->rooms[i]->name, name) == 0)
-            return graph->rooms[i];
+        if (ft_strcmp(graph->rooms[i]->name, trimName) == 0)
+            return (free(trimName), graph->rooms[i]);
     }
-    return NULL;
+    return (free(trimName), NULL);
 }
 
 int create_link(t_room *a, t_room *b)
@@ -108,4 +109,46 @@ int start_with(char *str, char *prefix)
         str++;
     }
     return (1);
+}
+
+
+int	ft_atoi_ants(char *str, int *num)
+{
+	// int			error;
+	// char		c;
+	int sign = 1;
+
+	if (*str == '-')
+	{
+		sign = -1;
+		str++;
+	}
+
+	if (*str > '9' || *str < '0')
+		return (0);
+	*num = *str - '0';
+	while (1)
+	{
+		str++;
+		if (*str < '0' || *str > '9') {
+			*num *= sign;
+			return (1);
+		}
+		*num *= 10;
+		*num += (*str - '0');
+		if (*num > 10000000)
+			return (0);
+	}
+}
+
+int str_count_char(char *str, char c)
+{
+	int count = 0;
+	while (*str)
+	{
+		if (*str == c)
+			count++;
+		str++;
+	}
+	return count;
 }

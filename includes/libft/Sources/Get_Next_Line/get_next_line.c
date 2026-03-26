@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lvodak <lvodak@student.s19.be>             +#+  +:+       +#+        */
+/*   By: lvodak <lvodak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 15:12:26 by lvodak            #+#    #+#             */
-/*   Updated: 2024/04/26 22:20:35 by lvodak           ###   ########.fr       */
+/*   Updated: 2026/02/27 17:29:10 by lvodak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,13 +115,15 @@ static char	*ft_main_fct(int n, char **buffer, char **rest)
 		return (0);
 }
 
-char	*get_next_line(int fd)
+char	*get_next_line(int fd,  int free_static)
 {
 	char		*buffer;
 	static char	*rest[10240];
 	char		*final;
 	int			n;
 
+	if (free_static)
+		return (free(rest[fd]), NULL);
 	if (BUFFER_SIZE <= 0 || BUFFER_SIZE >= 2147483647 || fd < 0 || fd > 10240)
 		return (0);
 	n = 1;

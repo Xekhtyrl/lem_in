@@ -1,19 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub.h                                              :+:      :+:    :+:   */
+/*   lem_in.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlafay <tlafay@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lvodak <lvodak@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 14:13:10 by tlafay            #+#    #+#             */
-/*   Updated: 2022/05/10 14:29:47 by tlafay           ###   ########.fr       */
+/*   Updated: 2026/02/27 17:46:52 by lvodak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB_H
 # define CUB_H
 
-# include "get_next_line.h"
+# include "libft/headers/get_next_line.h"
+# include "libft/headers/ft_printf.h"
+# include "libft/headers/libft.h"
 
 typedef enum e_room_type {
     START,
@@ -33,10 +35,10 @@ typedef struct s_room
     int distance;
 } t_room;
 
-typedef struct s_list {
+typedef struct s_farmlist {
     t_room* room;
-    struct s_list* next;
-} t_list;
+    struct s_farmlist* next;
+} t_farmlist;
 
 typedef struct s_graph
 {
@@ -51,25 +53,6 @@ typedef struct s_main
     t_graph graph;
     int ants;
 } t_main;
-
-/********    get_next_line.c    ********/
-
-char		*get_next_line(int fd, int free_backup);
-
-/*********  printf  */
-
-int	ft_printf(const char *info, ...);
-
-/********    libft.c    ********/
-
-int	ft_atoi(char *str, int *num);
-int			ft_strlen(char *str);
-int			ft_free(void *str);
-int			ft_error(char *str);
-void		*ft_malloc(size_t x);
-char	*ft_strdup(char *str);
-int ft_strcmp(char *a, char *b);
-
 
 /********    parsing.c    ********/
 
@@ -88,6 +71,8 @@ void print_main(t_main *main);
 int str_count_char(char *str, char c);
 t_room *get_room_by_name(t_graph *graph, char *name);
 int create_link(t_room *a, t_room *b);
+int	ft_atoi_ants(char *str, int *num);
+int str_count_char(char *str, char c);
 
 /************* connectivity.c */
 
@@ -98,8 +83,8 @@ int bfs(t_graph* graph, t_room* start, t_room* end);
 
 
 /************* list.c */
-int add_end(t_list** head,  t_room* room);
-t_room* pop_front(t_list** head);
-void free_list(t_list* head);
+int add_end(t_farmlist** head,  t_room* room);
+t_room* pop_front(t_farmlist** head);
+void free_list(t_farmlist* head);
 
 #endif

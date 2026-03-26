@@ -1,7 +1,7 @@
 #include "lem_in.h"
 
-int add_end(t_list** head,  t_room* room) {
-    t_list* new_node = malloc(sizeof(t_list));
+int add_end(t_farmlist** head,  t_room* room) {
+    t_farmlist* new_node = malloc(sizeof(t_farmlist));
     if (!new_node)
         return 0;
     new_node->room = room;
@@ -10,7 +10,7 @@ int add_end(t_list** head,  t_room* room) {
     if (*head == NULL) {
         *head = new_node;
     } else {
-        t_list * tail = *head;
+        t_farmlist * tail = *head;
         while (tail->next != NULL)
         {
             tail = tail->next;
@@ -20,12 +20,12 @@ int add_end(t_list** head,  t_room* room) {
     return 1;
 }
 
-t_room* pop_front(t_list** head) {
+t_room* pop_front(t_farmlist** head) {
     if (*head == NULL) {
         return NULL;
     }
 
-    t_list* temp = *head;
+    t_farmlist* temp = *head;
     t_room* room = temp->room;
     *head = (*head)->next;
 
@@ -33,9 +33,9 @@ t_room* pop_front(t_list** head) {
     return room;
 }
 
-void free_list(t_list* head) {
+void free_list(t_farmlist* head) {
     while (head != NULL) {
-        t_list* temp = head;
+        t_farmlist* temp = head;
         head = head->next;
         free(temp);
     }

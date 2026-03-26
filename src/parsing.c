@@ -9,7 +9,7 @@ typedef enum e_parsing_state {
 int parse_ants_line(char *line, t_main *main, int line_count)
 {
 	int ants = 0;
-	if (!ft_atoi(line, &ants)) {
+	if (!ft_atoi_ants(line, &ants)) {
 		if (ants > 10000000) {
 			ft_printf("Too many ants at line %d\n", line_count);
 			return (0);
@@ -63,7 +63,7 @@ int parse_room_line(char *line, t_main *main, int line_count, t_room_type *type)
 		return (0);
 	}
 	int x, y;
-	if (!ft_atoi(line + i, &x)) {
+	if (!ft_atoi_ants(line + i, &x)) {
 		ft_printf("Invalid X coordinate at line %d\n", line_count);
 		// free(line);
 		// line = NULL;
@@ -78,7 +78,7 @@ int parse_room_line(char *line, t_main *main, int line_count, t_room_type *type)
 		return (0);
 	}
 	i += 1;
-	if (!ft_atoi(line + i, &y)) {
+	if (!ft_atoi_ants(line + i, &y)) {
 		ft_printf("Invalid Y coordinate at line %d\n", line_count);
 		free(name);
 		return (0);
@@ -91,7 +91,8 @@ int parse_room_line(char *line, t_main *main, int line_count, t_room_type *type)
 		return (0);
 	}
 
-	room->name = name;
+	room->name = ft_strtrim(name, "\n\t\v");
+	free(name);
 	room->x = x;
 	room->y = y;
 	room->type = *type;
@@ -131,7 +132,7 @@ int parse_link_line(char *line, t_main *main, int line_count)
 			t_room *second_room = get_room_by_name(&main->graph, second_name);
 			if (!first_room || !second_room) {
 				ft_printf("Link references unknown room at line %d\n", line_count);
-			return (0);
+				return (0);
 			}
 			if (!create_link(first_room, second_room)) {
 				ft_printf("Failed to create link between '%s' and '%s' at line %d\n", first_name, second_name, line_count);
@@ -168,26 +169,26 @@ int	parsing(t_main *main)
 		switch (state)
 		{
 			case ANTS:
-			if (!parse_ants_line(line, main, line_count))
-			return error_parsing(line);
-			state = ROOMS;
-			break;
+				if (!parse_ants_line(line, main, line_count))
+					return error_parsing(line);
+				state = ROOMS;
+				break;
 			case ROOMS:
-			if (str_count_char(line, '-'))
-			{
-				state = LINKS;
-				if (!parse_link_line(line, main, line_count))
-				return error_parsing(line);
-			}
-			else {
-				if (!parse_room_line(line, main, line_count, &room_type))
-				return error_parsing(line);
-			}
-			break;
+				if (str_count_char(line, '-'))
+				{
+					state = LINKS;
+					if (!parse_link_line(line, main, line_count))
+					return error_parsing(line);
+				}
+				else {
+					if (!parse_room_line(line, main, line_count, &room_type))
+					return error_parsing(line);
+				}
+				break;
 			case LINKS:
-			if (!parse_link_line(line, main, line_count))
-			return error_parsing(line);
-			break;
+				if (!parse_link_line(line, main, line_count))
+					return error_parsing(line);
+				break;
 		}
 		
 		free(line);

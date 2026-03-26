@@ -1,26 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ajossera <ajossera@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lvodak <lvodak@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/19 13:47:27 by ajossera          #+#    #+#             */
-/*   Updated: 2021/11/26 11:57:58 by ajossera         ###   ########.fr       */
+/*   Created: 2023/11/12 15:12:29 by lvodak            #+#    #+#             */
+/*   Updated: 2024/02/14 18:00:14 by lvodak           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1
-# endif
-
-# include <limits.h>
 # include <unistd.h>
 # include <stdlib.h>
 
-char		*get_next_line(int fd, int free_backup);
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 1024
+# endif
+
+char	*get_next_line(int fd, int free_static);
+size_t	ft_strleng(char *s, int c);
+char	*ft_strdupg(char *src);
+char	*ft_strchrg(char *s, int clue);
+char	*ft_free_cond(char **rest, char **buffer, int end_file);
 
 #endif

@@ -19,11 +19,12 @@ int	main()
         free_graph(&main.graph);
         return 0;
     }
+
     if (!check_connectivity(&main.graph)) {
         free_graph(&main.graph);
         return 0;
     }
-    
+
     print_main(&main);
 
 

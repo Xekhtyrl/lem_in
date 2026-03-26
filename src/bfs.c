@@ -8,7 +8,7 @@ void reset_graph(t_graph* graph) {
 }
 
 int bfs(t_graph* graph, t_room* start, t_room* end) {
-    t_list* head = NULL;
+    t_farmlist* head = NULL;
 
     reset_graph(graph);
 
