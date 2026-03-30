@@ -20,8 +20,8 @@ int check_connectivity(t_graph *graph)
         return 0;
     }
 
-    int result = bfs(graph, graph->start, graph->end);
-    if (result == -1) {
+    int result = bfs(graph, graph->start, graph->end, true);
+    if (result == 0) {
         ft_printf("Error: No path exists between start and end rooms.\n");
         return 0;
     }

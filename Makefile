@@ -11,7 +11,8 @@ LIBFT_LIB = $(LIBFT_DIR)/libft.a
 INC_FLAGS := -I includes -I $(LIBFT_DIR)/headers
 
 SRCS := parsing.c main.c \
-        utils.c connectivity.c bfs.c list.c
+        utils.c connectivity.c bfs.c list.c \
+		algo.c
 
 SRC_DIR = src/
 OBJ_DIR = obj/

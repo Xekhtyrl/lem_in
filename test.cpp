@@ -55,6 +55,16 @@ public:
 			cout << i << ": " << level[i] << endl;
 		}
 	}
+	void printNodes(){
+		std::cout << std::endl;
+		for (int i = 0; i < V; i++){
+			for (auto& vertex: adj[i])
+			{
+				std::cout << vertex.v <<"/" << adj[i][vertex.rev] << ": "<< vertex.flow << std::endl;
+			}
+		}
+
+	}
 };
 
 // Finds if more flow can be sent from s to t.
@@ -215,5 +225,6 @@ int main()
      g.addEdge(4, 5, 10 ); */
 
     cout << "Maximum flow " << g.DinicMaxflow(0, 7);
+	g.printNodes();
     return 0;
 }

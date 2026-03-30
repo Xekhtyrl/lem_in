@@ -25,7 +25,9 @@ int	main()
         return 0;
     }
 
-    print_main(&main);
+	find_n_paths(&main);
+
+    // print_main(&main);
 
 
 

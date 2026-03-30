@@ -101,7 +101,7 @@ int parse_room_line(char *line, t_main *main, int line_count, t_room_type *type)
 	*type = SIMPLE;
 
 	if (!add_room_to_graph(main, room)) {
-		ft_printf("Failed to add room '%s' to graph at line %d\n", name, line_count);
+		ft_printf("Failed to add room '%s' to graph at line %d\n", room->name, line_count);
 		free_room(room);
 		return (0);
 	}

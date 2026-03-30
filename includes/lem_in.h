@@ -16,23 +16,25 @@
 # include "libft/headers/get_next_line.h"
 # include "libft/headers/ft_printf.h"
 # include "libft/headers/libft.h"
+# include <stdbool.h>
+
 
 typedef enum e_room_type {
-    START,
-    END,
+	START,
+	END,
 	SIMPLE
 } t_room_type;
 
 typedef struct s_room
 {
-    char *name;
-    int x;
-    int y;
+	char *name;
+	int x;
+	int y;
 	t_room_type type;
-    struct s_room **links;
-    int link_count;
-    int visited;
-    int distance;
+	struct s_room **links;
+	int link_count;
+	int flow;
+	int distance;
 } t_room;
 
 typedef struct s_farmlist {
@@ -68,23 +70,28 @@ void *free_room(t_room *room);
 void *free_graph(t_graph *graph);
 int start_with(char *str, char *prefix);
 void print_main(t_main *main);
+void print_graph(t_graph graph);
 int str_count_char(char *str, char c);
 t_room *get_room_by_name(t_graph *graph, char *name);
 int create_link(t_room *a, t_room *b);
 int	ft_atoi_ants(char *str, int *num);
 int str_count_char(char *str, char c);
+int min(int a, int b);
 
 /************* connectivity.c */
 
 int check_connectivity(t_graph *graph);
 
 /************* bfs.c */
-int bfs(t_graph* graph, t_room* start, t_room* end);
+int bfs(t_graph* graph, t_room* start, t_room* end, bool set_flow);
 
 
 /************* list.c */
 int add_end(t_farmlist** head,  t_room* room);
 t_room* pop_front(t_farmlist** head);
 void free_list(t_farmlist* head);
+
+/************* algo.c ************ */
+void find_n_paths(t_main* main);
 
 #endif

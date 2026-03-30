@@ -46,14 +46,14 @@ int add_room_to_graph(t_main *main, t_room *room)
 	return (1);
 }
 
-void print_graph(t_graph *graph)
+void print_graph(t_graph graph)
 {
-    ft_printf("Graph has %d rooms:\n", graph->room_count);
-    for (int i = 0; i < graph->room_count; i++)
+    ft_printf("Graph has %d rooms:\n", graph.room_count);
+    for (int i = 0; i < graph.room_count; i++)
     {
-        t_room *room = graph->rooms[i];
+        t_room *room = graph.rooms[i];
         char *type_str = (room->type == START) ? "START" : (room->type == END) ? "END" : "SIMPLE";
-        ft_printf("Room %d: %s (%d, %d) Type: %s Links: %d Visited: %i, Distance: %i\n", i, room->name, room->x, room->y, type_str, room->link_count, room->visited, room->distance);
+        ft_printf("Room %d: %s (%d, %d) Type: %s Links: %d Visited: %i, Distance: %i\n", i, room->name, room->x, room->y, type_str, room->link_count, room->flow, room->distance);
     }
 }
 
@@ -97,7 +97,7 @@ int create_link(t_room *a, t_room *b)
 void print_main(t_main *main)
 {
     ft_printf("Ants: %d\n", main->ants);
-    print_graph(&main->graph);
+    print_graph(main->graph);
 }
 
 int start_with(char *str, char *prefix)
@@ -151,4 +151,8 @@ int str_count_char(char *str, char c)
 		str++;
 	}
 	return count;
+}
+
+int min(int a, int b){
+	return a * (a <= b) + b * (b < a);
 }
