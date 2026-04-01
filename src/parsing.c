@@ -97,6 +97,7 @@ int parse_room_line(char *line, t_main *main, int line_count, t_room_type *type)
 	room->y = y;
 	room->type = *type;
 	room->link_count = 0;
+	room->index = -1;
 	room->links = NULL;
 	*type = SIMPLE;
 

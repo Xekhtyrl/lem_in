@@ -23,3 +23,16 @@ t_list	*ft_lstnew(void *cnt)
 	new->next = NULL;
 	return (new);
 }
+
+t_list	*ft_dbl_lstnew(void *cnt)
+{
+	t_list	*new;
+
+	new = malloc(sizeof(t_list));
+	if (!new)
+		return (0);
+	new->content = cnt;
+	new->next = NULL;
+	new->prev = NULL;
+	return (new);
+}

@@ -5,6 +5,7 @@ int add_end(t_farmlist** head,  t_room* room) {
     if (!new_node)
         return 0;
     new_node->room = room;
+	new_node->occupant = -1;
     new_node->next = NULL;
 
     if (*head == NULL) {
@@ -20,17 +21,34 @@ int add_end(t_farmlist** head,  t_room* room) {
     return 1;
 }
 
-t_room* pop_front(t_farmlist** head) {
+int add_front(t_farmlist** head,  t_room* room) {
+    t_farmlist* new_node = malloc(sizeof(t_farmlist));
+    if (!new_node)
+        return 0;
+    new_node->room = room;
+	new_node->occupant = -1;
+    new_node->next = NULL;
+
     if (*head == NULL) {
-        return NULL;
+        *head = new_node;
+    } else {
+        new_node->next = *head;
+		*head = new_node;
     }
+    return 1;
+}
 
-    t_farmlist* temp = *head;
-    t_room* room = temp->room;
-    *head = (*head)->next;
+t_room* pop_front(t_farmlist** head) {
+	if (*head == NULL) {
+		return NULL;
+	}
 
-    free(temp);
-    return room;
+	t_farmlist* temp = *head;
+	t_room* room = temp->room;
+	*head = (*head)->next;
+
+	free(temp);
+	return room;
 }
 
 void free_list(t_farmlist* head) {
@@ -39,4 +57,26 @@ void free_list(t_farmlist* head) {
         head = head->next;
         free(temp);
     }
+}
+
+t_intlst*	new_intlst(int val) {
+	t_intlst* new = malloc(sizeof(t_intlst));
+	if (!new)
+		return NULL;
+	new->val = val;
+	new->next = NULL;
+	new->prev = NULL;
+	return new;
+}
+
+t_intlst* pop_frt(t_intlst** lst){
+	if (!lst || *lst == NULL) {
+        return NULL;
+    }
+
+    t_intlst* temp = *lst;
+    *lst = (*lst)->next;
+	if (*lst)
+		(*lst)->prev = NULL;
+    return temp;
 }

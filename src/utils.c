@@ -53,7 +53,11 @@ void print_graph(t_graph graph)
     {
         t_room *room = graph.rooms[i];
         char *type_str = (room->type == START) ? "START" : (room->type == END) ? "END" : "SIMPLE";
-        ft_printf("Room %d: %s (%d, %d) Type: %s Links: %d Visited: %i, Distance: %i\n", i, room->name, room->x, room->y, type_str, room->link_count, room->flow, room->distance);
+        ft_printf("Room %d: %s (%d, %d) Type: %s Index: %i Links: %d Visited: %i, Distance: %i\nLinked to:\n", i, room->name, room->x, room->y, type_str, room->index, room->link_count, room->flow, room->distance);
+		for (int j = 0; j < room->link_count;j++) {
+			ft_printf("Room: %s, ", room->links[j]->name);
+		}
+		ft_printf("\n");
     }
 }
 
@@ -66,6 +70,15 @@ t_room *get_room_by_name(t_graph *graph, char *name)
             return (free(trimName), graph->rooms[i]);
     }
     return (free(trimName), NULL);
+}
+
+t_room* get_room_by_index(t_graph* graph, int index){
+	for (int i = 0; i < graph->room_count; i++)
+    {
+		if (graph->rooms[i]->index == index)
+			return graph->rooms[i];
+	}
+	return NULL;
 }
 
 int create_link(t_room *a, t_room *b)

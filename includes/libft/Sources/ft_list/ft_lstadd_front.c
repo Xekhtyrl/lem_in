@@ -22,3 +22,15 @@ void	ft_lstadd_front(t_list **lst, t_list *new)
 	temp->next = *lst;
 	*lst = temp;
 }
+
+void	ft_dbl_lstadd_front(t_list **lst, t_list *new)
+{
+	t_list	*temp;
+
+	if (!lst || !new)
+		return ;
+	temp = new;
+	(*lst)->prev = temp;
+	temp->next = *lst;
+	*lst = temp;
+}

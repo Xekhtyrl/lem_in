@@ -17,20 +17,23 @@ int	main()
     if (!parsing(&main)){
         ft_printf("Parsing failed\n");
         free_graph(&main.graph);
-        return 0;
+        return 1;
     }
 
     if (!check_connectivity(&main.graph)) {
         free_graph(&main.graph);
-        return 0;
+        return 1;
     }
+	int path_nbr = 0;
+	t_path* paths = find_n_paths(&main, &path_nbr);
+	if (!paths){
+		free_graph(&main.graph);
+		return 1;
+	}
 
-	find_n_paths(&main);
-
+	send_ants(&main, paths, path_nbr);
+	free_paths(paths, path_nbr);
     // print_main(&main);
-
-
-
 
     free_graph(&main.graph);
     return 0;
