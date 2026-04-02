@@ -107,8 +107,8 @@ int 	min(int a, int b);
 int check_connectivity(t_graph *graph);
 
 /************* bfs.c */
-int bfs(t_graph* graph, t_room* start, t_room* end, int use_setup);
-int bfs_matrix(int **graph, int start, int end, int* level);
+int bfs(t_graph* graph, t_room* start, t_room* end);
+int bfs_matrix(int **mat, int start, int end, int* level, int* dist);
 
 /************* list.c */
 int			add_end(t_farmlist** head,  t_room* room);
@@ -132,11 +132,12 @@ void free_mat(int **mat, int size);
 void free_paths(t_path* paths, int n_path);
 
 /************* dinic.c ************ */
-int dinic_max_flow(int **graph, int n, int source, int sink);
+int dinic_max_flow(int** mat, int curr, int end, int *dist);
 
 /************* dinic_utils.c ************ */
-void fill_matrix(t_room* start, t_room* end, int** mat, t_graph* graph);
-int **nodes_to_matrix(t_graph* graph);
+void fill_matrix(t_room* start, int** mat, int** copy);
+int **nodes_to_matrix(t_graph* graph, int*** copy);
 int path_cost_overload(int **costs, int new_cost, int new_size, int ants);
+int* get_distances(t_graph* graph);
 
 #endif

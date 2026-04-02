@@ -1,18 +1,18 @@
 #include "lem_in.h"
 
-int get_path(t_path* path, int **mat, t_graph* graph, int curr){
-	if (curr == 0){
+int get_path(t_path* path, int **mat, t_graph* graph, int curr, int**origin){
+	if (curr == graph->end->index){
 		path->length += 1;
 		return 1;
 	}
 	
-	for (int nxt = 0; nxt < graph->end->index + 1; nxt++){
-		if (mat[curr][nxt] > 0){
-			mat[curr][nxt] = 0;
-			int flow = get_path(path, mat, graph, nxt);
+	for (int nxt = 0; nxt < graph->room_count; nxt++){
+		if (mat[curr][nxt] == 0 && origin[curr][nxt] == 1){
+			mat[curr][nxt] = 1;
+			int flow = get_path(path, mat, graph, nxt, origin);
 			if (flow == 1)
 			{
-				add_end(&(path->path), get_room_by_index(graph, curr));
+				add_front(&(path->path), get_room_by_index(graph, curr));
 				path->length += 1;
 				return 1;
 			}
@@ -21,21 +21,22 @@ int get_path(t_path* path, int **mat, t_graph* graph, int curr){
 	return 0;
 }
 
-void get_paths(t_path* paths, int** mat, t_main* main, int *path_nbr){
+void get_paths(t_path* paths, int** mat, t_main* main, int *path_nbr, int** origin){
 	t_graph *graph = &(main->graph);
 	int npath = 0;
-	print_level(mat[graph->end->index], graph->end->index);
 	for (int i = 0; i < graph->end->index + 1; i++){
-		if (npath >= *path_nbr)
-			break;
-		if (mat[graph->end->index][i] > 0){
+		if (npath >= *path_nbr){
+			if (mat[0][i] == 0 && origin[graph->start->index][i] == 1)
+				ft_printf("Warning: More paths found than expected. Stopping search.\n");}
+		else if (mat[0][i] == 0 && origin[graph->start->index][i] == 1){
 			ft_printf("Found path(%i) to node %i\n", npath, i);
-			mat[graph->end->index][i] = 0;
-			get_path(&(paths[npath]), mat, graph, i);
+			mat[graph->start->index][i] = 1;
+			get_path(&(paths[npath]), mat, graph, i, origin);
 			add_end(&(paths[npath].path), graph->end);
 			npath++;
 		}
-	} 
+	}
+	ft_printf("Total paths found: %i vs %i\n", npath, *path_nbr);
 }
 
 void calculate_min_ants_for_path(t_path* paths, int n_path){
@@ -50,12 +51,28 @@ void calculate_min_ants_for_path(t_path* paths, int n_path){
 t_path* find_n_paths(t_main* main, int* path_nbr){
 	t_graph graph = main->graph;
 	
-	int **mat = nodes_to_matrix(&graph);
+	int **copy = NULL;
+	int **mat = nodes_to_matrix(&graph, &copy);
+	if (!mat || !copy) {
+		ft_printf("Error creating adjacency matrix\n");
+		if (mat)
+			free_mat(mat, graph.room_count);
+		if (copy)
+			free_mat(copy, graph.room_count);
+		return NULL;
+	}
 	if (!mat) {
 		ft_printf("Memory allocation failed\n");
 		return NULL;
 	}
-	*path_nbr = dinic_max_flow(mat, 0, graph.end->index, main->ants);
+	int *dist = get_distances(&graph);
+	if (!dist) {
+		ft_printf("Error calculating distances\n");
+		free_mat(mat, graph.room_count);
+		free_mat(copy, graph.room_count);
+		return NULL;
+	}
+	*path_nbr = dinic_max_flow(mat, 0, graph.end->index, dist);
 	if (*path_nbr == -1) {
 		ft_printf("Error during max flow calculation\n");
 		free_mat(mat, graph.room_count);
@@ -63,8 +80,10 @@ t_path* find_n_paths(t_main* main, int* path_nbr){
 	}
 
 	t_path* paths = calloc(sizeof(t_path), *path_nbr);
-	get_paths(paths, mat, main, path_nbr);
+	get_paths(paths, mat, main, path_nbr, copy);
 	free_mat(mat, graph.room_count);
+	free_mat(copy, graph.room_count);
+	free(dist);
 	calculate_min_ants_for_path(paths, *path_nbr);
 	return paths;
 }

@@ -1,48 +1,38 @@
 #include "lem_in.h"
 
-void fill_matrix(t_room* start, t_room* end, int** mat, t_graph* graph){
+void fill_matrix(t_room* start, int** mat, int** copy){
 	t_farmlist* head = NULL;
-	// bfs(graph, start, end, MATRIX);
-	// print_graph(*graph);
-	(void)end;
-	(void)graph;
 	add_end(&head, start);
 	while(head){
 		t_room* curr = pop_front(&head);
-		// if (curr == end)
-		// 	continue;
 		for (int i = 0; i < curr->link_count; i++){
 			if (mat[curr->index][curr->links[i]->index] != 1){
 				mat[curr->index][curr->links[i]->index] = 1;
-				// curr->links[i]->distance = -1;
+				copy[curr->index][curr->links[i]->index] = 1;
 				add_end(&head, curr->links[i]);
 			}
-			// else{
-			// 	ft_printf("Not adding room %s to queue\n", curr->links[i]->name);
-			// 	ft_printf("Distance: %i, curr distance: %i\n", curr->links[i]->distance, curr->distance);
-			// 	ft_printf("Condition 1: %i\n", mat[curr->links[i]->indeneighborx][curr->index] != 1);
-			// 	ft_printf("Condition 2: %i\n", curr->links[i]->distance <= curr->distance);
-			// 	ft_printf("Matrix value: %i\n", mat[curr->links[i]->index][curr->index]);
-			// }
 		}
 	}
 	free_list(head);
 }
 
-int **nodes_to_matrix(t_graph* graph){
+int **nodes_to_matrix(t_graph* graph, int*** copy){
 	int **mat = malloc(sizeof(int*) * (graph->room_count + 1));
+	*copy = malloc(sizeof(int*) * (graph->room_count + 1));
 	mat[graph->room_count] = NULL;
-	if (!mat)
+	(*copy)[graph->room_count] = NULL;
+	if (!mat || !(*copy))
 		return NULL;
 	for (int i = 0; i < graph->room_count; i++) {
 		mat[i] = ft_calloc(graph->room_count, sizeof(int));
-		if (!mat[i]) {
+		(*copy)[i] = ft_calloc(graph->room_count, sizeof(int));
+		if (!mat[i] || !(*copy)[i]) {
 			free_mat(mat, i);
+			free_mat(*copy, i);
 			return NULL;
 		}
-		//protect malloc
 	}
-	fill_matrix(graph->start, graph->end, mat, graph);
+	fill_matrix(graph->start, mat, *copy);
 	free(mat[graph->end->index]);
 	mat[graph->end->index] = ft_calloc(sizeof(int), graph->room_count);
 	return mat;
@@ -64,4 +54,14 @@ int path_cost_overload(int **costs, int new_cost, int new_size, int ants) {
 	*costs = new_tab;
 	return total > ants;
 	
+}
+
+int *get_distances(t_graph* graph) {
+	int *distances = malloc(sizeof(int) * graph->room_count);
+	if (!distances)
+		return NULL;
+	for (int i = 0; i < graph->room_count; i++) {
+		distances[graph->rooms[i]->index] = graph->rooms[i]->distance;
+	}
+	return distances;
 }
