@@ -1,230 +1,199 @@
-// C++ implementation of Dinic's Algorithm
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <climits>
+
 using namespace std;
 
-// A structure to represent a edge between
-// two vertex
-struct Edge {
-    int v; // Vertex v (or "to" vertex)
-           // of a directed edge u-v. "From"
-           // vertex u can be obtained using
-           // index in adjacent array.
+// Stores the found edges
+vector<bool> found;
 
-    int flow; // flow of data in edge
+// Stores the number of nodes
+int N = 0;
 
-    int C; // capacity
+// Stores the capacity of each edge
+vector<vector<int>> cap;
 
-    int rev; // To store index of reverse
-             // edge in adjacency list so that
-             // we can quickly find it.
-};
+vector<vector<int>> flow;
 
-// Residual Graph
-class Graph {
-    int V; // number of vertex
-    int* level; // stores level of a node
-    vector<Edge>* adj;
+// Stores the cost per unit flow of each edge
+vector<vector<int>> cost;
 
-public:
-    Graph(int V)
-    {
-        adj = new vector<Edge>[V];
-        this->V = V;
-        level = new int[V];
-    }
+// Stores the distance from each node
+// and picked edges for each node
+vector<int> dad, dist, pi;
 
-    // add edge to the graph
-    void addEdge(int u, int v, int C)
-    {
-        // Forward edge : 0 flow and C capacity
-        Edge a{ v, 0, C, (int)adj[v].size() };
+const int INF = INT_MAX / 2 - 1;
 
-        // Back edge : 0 flow and 0 capacity
-        Edge b{ u, 0, C, (int)adj[u].size() };
+// Function to check if it is possible to
+// have a flow from the src to sink
+bool search(int src, int sink) {
 
-        adj[u].push_back(a);
-        adj[v].push_back(b); // reverse edge
-    }
+	// Initialise found[] to false
+	found = vector<bool>(N, false);
 
-    bool BFS(int s, int t);
-    int sendFlow(int s, int flow, int t, int ptr[]);
-    int DinicMaxflow(int s, int t);
-	void printLevel(){
-		std::cout << "Levels:" << std::endl;
-		for (int i = 0;i < V; i++){
-			cout << i << ": " << level[i] << endl;
-		}
-	}
-	void printNodes(){
-		std::cout << std::endl;
-		for (int i = 0; i < V; i++){
-			for (auto& vertex: adj[i])
-			{
-				std::cout << vertex.v <<"/" << adj[i][vertex.rev] << ": "<< vertex.flow << std::endl;
+	// Initialise the dist[] to INF
+	dist = vector<int>(N + 1, INF);
+
+	// Distance from the source node
+	dist[src] = 0;
+
+	// Iterate until src reaches N
+	while (src != N) {
+		int best = N;
+		found[src] = true;
+
+		for (int k = 0; k < N; k++) {
+
+			// If already found
+			if (found[k])
+				continue;
+
+			// Evaluate while flow
+			// is still in supply
+			if (flow[k][src] != 0) {
+
+				// Obtain the total value
+				int val = dist[src] + pi[src] - pi[k] - cost[k][src];
+
+				// If dist[k] is > minimum value
+				if (dist[k] > val) {
+
+					// Update
+					dist[k] = val;
+					dad[k] = src;
+				}
 			}
+
+			if (flow[src][k] < cap[src][k]) {
+				int val = dist[src] + pi[src] - pi[k] + cost[src][k];
+
+				// If dist[k] is > minimum value
+				if (dist[k] > val) {
+
+					// Update
+					dist[k] = val;
+					dad[k] = src;
+				}
+			}
+
+			if (dist[k] < dist[best])
+				best = k;
 		}
 
+		// Update src to best for
+		// next iteration
+		src = best;
 	}
-};
 
-// Finds if more flow can be sent from s to t.
-// Also assigns levels to nodes.
-bool Graph::BFS(int s, int t)
-{
-    for (int i = 0; i < V; i++)
-        level[i] = -1;
+	for (int k = 0; k < N; k++)
+		pi[k] = min(pi[k] + dist[k], INF);
 
-    level[s] = 0; // Level of source vertex
-
-    // Create a queue, enqueue source vertex
-    // and mark source vertex as visited here
-    // level[] array works as visited array also.
-    list<int> q;
-    q.push_back(s);
-
-    vector<Edge>::iterator i;
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop_front();
-        for (i = adj[u].begin(); i != adj[u].end(); i++) {
-            Edge& e = *i;
-            if (level[e.v] < 0 && e.flow < e.C) {
-                // Level of current vertex is,
-                // level of parent + 1
-                level[e.v] = level[u] + 1;
-
-                q.push_back(e.v);
-            }
-        }
-    }
-
-    // IF we can not reach to the sink we
-    // return false else true
-    return level[t] < 0 ? false : true;
+	// Return the value obtained at sink
+	return found[sink];
 }
 
-// A DFS based function to send flow after BFS has
-// figured out that there is a possible flow and
-// constructed levels. This function called multiple
-// times for a single call of BFS.
-// flow : Current flow send by parent function call
-// start[] : To keep track of next edge to be explored.
-//           start[i] stores  count of edges explored
-//           from i.
-//  u : Current vertex
-//  t : Sink
-int Graph::sendFlow(int u, int flow, int t, int start[])
-{
-    // Sink reached
-    if (u == t)
-        return flow;
+// Function to obtain the maximum Flow
+vector<int> getMaxFlow(vector<vector<int>>& capi,
+					   vector<vector<int>>& costi,
+					   int src, int sink) {
 
-    // Traverse all adjacent edges one -by - one.
-    for (; start[u] < adj[u].size(); start[u]++) {
-        // Pick next edge from adjacency list of u
-        Edge& e = adj[u][start[u]];
+	cap = capi;
+	cost = costi;
 
-        if (level[e.v] == level[u] + 1 && e.flow < e.C) {
-            // find minimum flow from u to t
-            int curr_flow = min(flow, e.C - e.flow);
+	N = cap.size();
+	found = vector<bool>(N, false);
+	flow.assign(N, vector<int>(N, 0));
+	dist = vector<int>(N + 1, 0);
+	dad = vector<int>(N, 0);
+	pi = vector<int>(N, 0);
 
-            int temp_flow
-                = sendFlow(e.v, curr_flow, t, start);
+	int totflow = 0, totcost = 0;
 
-            // flow is greater than zero
-            if (temp_flow > 0) {
-                // add flow  to current edge
-				cout << e.flow << endl;
-                e.flow += temp_flow;
-				cout << e.v << " flow = " << e.flow << "/" << temp_flow << "("<< u <<" "<<adj[e.v][e.rev].v<< ")"<< endl;
+	// If a path exists from src to sink
+	while (search(src, sink)) {
 
-                // subtract flow from reverse edge
-                // of current edge
-                adj[e.v][e.rev].flow -= temp_flow;
-				cout << "rev flow of" << e.v << ", " << adj[e.v][e.rev].v << ": " << adj[e.v][e.rev].flow << endl;
-                return temp_flow;
-            }
-			else cout << e.v << " blocked" << endl;
-        } else cout << e.v << " total blocked (" << u << ")" << endl;
-    } 
+		// Set the default amount
+		int amt = INF;
+		int x = sink;
 
-    return 0;
-}
+		while (x != src) {
+			amt = min(
+				amt, flow[x][dad[x]] != 0
+						 ? flow[x][dad[x]]
+						 : cap[dad[x]][x] - flow[dad[x]][x]);
+			x = dad[x];
+		}
 
-// Returns maximum flow in graph
-int Graph::DinicMaxflow(int s, int t)
-{
-    // Corner case
-    if (s == t)
-        return -1;
+		x = sink;
 
-    int total = 0; // Initialize result
+		while (x != src) {
+			if (flow[x][dad[x]] != 0) {
+				flow[x][dad[x]] -= amt;
+				totcost -= amt * cost[x][dad[x]];
+			} else {
+				flow[dad[x]][x] += amt;
+				totcost += amt * cost[dad[x]][x];
+			}
 
-    // Augment the flow while there is path
-    // from source to sink
-    while (BFS(s, t) == true) {
-        // store how many edges are visited
-        // from V { 0 to V }
-        int* start = new int[V + 1]{ 0 };
+			x = dad[x];
+		}
 
-        // while flow is not zero in graph from S to D
-		cout << "new BFS" << endl;
-		printLevel();
-        while (int flow = sendFlow(s, INT_MAX, t, start)) {
+		totflow += amt;
+	}
 
-            // Add path flow to overall flow
-            total += flow;
-			cout << "total = " << total << endl;
-        }
-
-        // Remove allocated array
-        delete[] start;
-    }
-
-    // return maximum flow
-    return total;
+	// Return pair total cost and sink
+	return {totflow, totcost};
 }
 
 // Driver Code
-int main()
-{
-		Graph g(8);
-		g.addEdge(0,1,1);
-		g.addEdge(0,2,1);
-		g.addEdge(1,4,1);
-		g.addEdge(2,5,1);
-		g.addEdge(2,3,1);
-		g.addEdge(6,3,1);
-		g.addEdge(4,5,1);
-		g.addEdge(5,7,1);
-		g.addEdge(6,7,1);
+int main() {
 
+	int s = 0, t = 17;
 
+	vector<vector<int>> cap = {{0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+							   {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+							   {1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+							   {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
+							   {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+							   {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0},
+							   {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0},
+							   {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+							   {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+							   {0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+							   {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
+							   {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
+							   {0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+							   {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+							   {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0}, 
+							   {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+							   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1}, 
+							   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0}};
 
-    // next exmp
-    /*g.addEdge(0, 1, 3 );
-      g.addEdge(0, 2, 7 ) ;
-      g.addEdge(1, 3, 9);
-      g.addEdge(1, 4, 9 );
-      g.addEdge(2, 1, 9 );
-      g.addEdge(2, 4, 9);
-      g.addEdge(2, 5, 4);
-      g.addEdge(3, 5, 3);
-      g.addEdge(4, 5, 7 );
-      g.addEdge(0, 4, 10);
+	vector<vector<int>> cost = {{0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+							   {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+							   {1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+							   {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
+							   {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+							   {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0},
+							   {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0},
+							   {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+							   {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+							   {0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+							   {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
+							   {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
+							   {0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+							   {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+							   {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0}, 
+							   {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+							   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1}, 
+							   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0}};
 
-     // next exp
-     g.addEdge(0, 1, 10);
-     g.addEdge(0, 2, 10);
-     g.addEdge(1, 3, 4 );
-     g.addEdge(1, 4, 8 );
-     g.addEdge(1, 2, 2 );
-     g.addEdge(2, 4, 9 );
-     g.addEdge(3, 5, 10 );
-     g.addEdge(4, 3, 6 );
-     g.addEdge(4, 5, 10 ); */
+	vector<int> ret = getMaxFlow(cap, cost, s, t);
 
-    cout << "Maximum flow " << g.DinicMaxflow(0, 7);
-	g.printNodes();
-    return 0;
+	cout << ret[0] << " " << ret[1] << endl;
+
+	return 0;
 }
+
+
+// by phasing17

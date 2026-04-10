@@ -47,7 +47,7 @@ static void reset_level(int *level, int size){
 int bfs_matrix(int **mat, int start, int end, int* level, int* dist) {
 	reset_level(level, end + 1);
 	level[0] = 0;
-	print_level(dist, end + 1);
+	print_level(dist, 0);
 	t_intlst* head = NULL;
 
 	ft_dbl_lstadd_back((t_list**)&head, (t_list*)new_intlst(start));
@@ -57,8 +57,8 @@ int bfs_matrix(int **mat, int start, int end, int* level, int* dist) {
 		t_intlst* curr = pop_frt(&head);
 		for (int nxt = 0; nxt < end + 1; nxt++){
 			if (mat[curr->val][nxt] > 0 &&
-				level[nxt] == -1 &&
-				dist[nxt] == dist[curr->val] + 1)
+				level[nxt] == -1 /* &&
+				dist[nxt] == dist[curr->val] + 1 */)
 			{
 				level[nxt] = level[curr->val] + 1;
 				ft_dbl_lstadd_back((t_list**)&head, (t_list*)new_intlst(nxt));

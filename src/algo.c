@@ -23,6 +23,9 @@ int get_path(t_path* path, int **mat, t_graph* graph, int curr, int**origin){
 
 void get_paths(t_path* paths, int** mat, t_main* main, int *path_nbr, int** origin){
 	t_graph *graph = &(main->graph);
+	// 	print_mat(mat, graph->room_count);
+	// ft_printf("Finding paths...\n");
+	// print_mat(origin, graph->room_count);
 	int npath = 0;
 	for (int i = 0; i < graph->end->index + 1; i++){
 		if (npath >= *path_nbr){
