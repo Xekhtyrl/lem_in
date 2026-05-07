@@ -29,3 +29,24 @@ void print_level(int*level, int size){
 		ft_printf("%i ", level[i]);
 	ft_printf("\n");
 }
+
+void print_main(t_main *main)
+{
+    ft_printf("Ants: %d\n", main->ants);
+    print_graph(main->graph);
+}
+
+void print_graph(t_graph graph)
+{
+    ft_printf("Graph has %d rooms:\n", graph.room_count);
+    for (int i = 0; i < graph.room_count; i++)
+    {
+        t_room *room = graph.rooms[i];
+        char *type_str = (room->type == START) ? "START" : (room->type == END) ? "END" : "SIMPLE";
+        ft_printf("Room %d: %s (%d, %d) Type: %s Index: %i Links: %d Visited: %i, Distance: %i\nLinked to:\n", i, room->name, room->x, room->y, type_str, room->index, room->link_count, room->flow, room->distance);
+		for (int j = 0; j < room->link_count;j++) {
+			ft_printf("Room: %s, ", room->links[j]->name);
+		}
+		ft_printf("\n");
+    }
+}

@@ -6,7 +6,7 @@ typedef enum e_parsing_state {
 	LINKS
 } t_parsing_state;
 
-int parse_ants_line(char *line, t_main *main, int line_count)
+static int parse_ants_line(char *line, t_main *main, int line_count)
 {
 	int ants = 0;
 	if (!ft_atoi_ants(line, &ants)) {
@@ -29,7 +29,7 @@ int parse_ants_line(char *line, t_main *main, int line_count)
 	return (1);
 }
 
-int parse_room_line(char *line, t_main *main, int line_count, t_room_type *type)
+static int parse_room_line(char *line, t_main *main, int line_count, t_room_type *type)
 {
 	if (start_with(line, "##start")) {
 		*type = START;
@@ -110,7 +110,7 @@ int parse_room_line(char *line, t_main *main, int line_count, t_room_type *type)
 	return (1);
 }
 
-int parse_link_line(char *line, t_main *main, int line_count)
+static int parse_link_line(char *line, t_main *main, int line_count)
 {
 	if (line[0] == '#') {
 		return (1);
@@ -148,7 +148,7 @@ int parse_link_line(char *line, t_main *main, int line_count)
 	return (0);
 }
 
-int error_parsing(char *line) {
+static int error_parsing(char *line) {
 	if (line)
 		free(line);
 	get_next_line(0, 1);

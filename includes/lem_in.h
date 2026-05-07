@@ -10,19 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB_H
-# define CUB_H
+#ifndef LEM_IN_H
+# define LEM_IN_H
 
 # include "libft/headers/get_next_line.h"
 # include "libft/headers/ft_printf.h"
 # include "libft/headers/libft.h"
 # include <stdbool.h>
-
-typedef enum e_bfs_use {
-	INIT,
-	MATRIX,
-	DINIC
-} t_bfs_use;
 
 typedef enum e_room_type {
 	START,
@@ -79,6 +73,13 @@ typedef struct s_path {
 	int flow_in;
 } t_path;
 
+typedef struct s_result {
+	struct s_result* next;
+	t_path* paths;
+	int path_nbr;
+	int turns;
+} t_result;
+
 /********    parsing.c    ********/
 
 char		ft_mute_char(int fd, char muted, int type);
@@ -89,11 +90,7 @@ int	parsing(t_main *main);
 /********    utils.c    ********/
 
 int 	add_room_to_graph(t_main *main, t_room *room);
-void 	*free_room(t_room *room);
-void 	*free_graph(t_graph *graph);
 int 	start_with(char *str, char *prefix);
-void 	print_main(t_main *main);
-void 	print_graph(t_graph graph);
 int 	str_count_char(char *str, char c);
 t_room*	get_room_by_name(t_graph *graph, char *name);
 t_room*	get_room_by_index(t_graph* graph, int index);
@@ -108,7 +105,7 @@ int check_connectivity(t_graph *graph);
 
 /************* bfs.c */
 int bfs(t_graph* graph, t_room* start, t_room* end);
-int bfs_matrix(int **mat, int start, int end, int* level, int* dist);
+int bfs_matrix(int **mat, int start, int end, int* level);
 
 /************* list.c */
 int			add_end(t_farmlist** head,  t_room* room);
@@ -118,26 +115,37 @@ void		free_list(t_farmlist* head);
 t_intlst*	new_intlst(int val);
 t_intlst* 	pop_frt(t_intlst** lst);
 
-/************* algo.c ************ */
-t_path* find_n_paths(t_main* main, int* path_nbr);
-void send_ants(t_main* main, t_path* paths, int path_nbr);
+/************* pathfinding.c ************ */
+t_result*	find_n_paths(t_main* main);
+void		get_paths(t_path* paths, int** mat, t_main* main, int path_nbr, int** origin);
+void		calculate_min_ants_for_path(t_path* paths, int n_path);
+
+/************* launch_ants.c ************ */
+void		send_ants(t_main* main, t_path* paths, int path_nbr);
 
 /************* print_utils.c ************ */
 void print_mat(int** mat, int max_y);
 void print_paths(t_path* paths, int path_nbr);
 void print_level(int*level, int size);
+void print_main(t_main *main);
+void print_graph(t_graph graph);
 
 /************* free_utils.c ************ */
-void free_mat(int **mat, int size);
-void free_paths(t_path* paths, int n_path);
+void 	free_mat(int **mat, int size);
+void 	free_paths(t_path* paths, int n_path);
+void	free_result(t_result* res);
+void 	*free_room(t_room *room);
+void 	*free_graph(t_graph *graph);
 
 /************* dinic.c ************ */
-int dinic_max_flow(int** mat, int curr, int end, int *dist);
+t_result* dinic_max_flow(int** mat, int curr, int end, t_main* main, int** origin);
 
 /************* dinic_utils.c ************ */
-void fill_matrix(t_room* start, int** mat, int** copy);
-int **nodes_to_matrix(t_graph* graph, int*** copy);
-int path_cost_overload(int **costs, int new_cost, int new_size, int ants);
-int* get_distances(t_graph* graph);
+void	fill_matrix(t_room* start, int** mat, int** copy);
+int**	nodes_to_matrix(t_graph* graph, int*** copy);
+
+/************* dinic_result_creation.c ************ */
+t_result*	add_result(t_result* head, t_path* paths, int turns, int path_nbr);
+int			count_turns(t_path* paths, int n_path, int ants);
 
 #endif

@@ -1,32 +1,5 @@
 #include "lem_in.h"
 
-void *free_room(t_room *room)
-{
-    if (room)
-    {
-        if (room->name)
-            free(room->name);
-        if (room->links)
-            free(room->links);
-        free(room);
-    }
-    return (NULL);
-}
-
-void *free_graph(t_graph *graph)
-{
-    if (graph)
-    {
-        for (int i = 0; i < graph->room_count; i++)
-        {
-            free_room(graph->rooms[i]);
-        }
-        if (graph->rooms)
-            free(graph->rooms);
-    }
-    return (NULL);
-}
-
 int add_room_to_graph(t_main *main, t_room *room)
 {
 	t_graph *graph = &main->graph;
@@ -44,21 +17,6 @@ int add_room_to_graph(t_main *main, t_room *room)
 	graph->rooms = new_rooms;
 	graph->room_count++;
 	return (1);
-}
-
-void print_graph(t_graph graph)
-{
-    ft_printf("Graph has %d rooms:\n", graph.room_count);
-    for (int i = 0; i < graph.room_count; i++)
-    {
-        t_room *room = graph.rooms[i];
-        char *type_str = (room->type == START) ? "START" : (room->type == END) ? "END" : "SIMPLE";
-        ft_printf("Room %d: %s (%d, %d) Type: %s Index: %i Links: %d Visited: %i, Distance: %i\nLinked to:\n", i, room->name, room->x, room->y, type_str, room->index, room->link_count, room->flow, room->distance);
-		for (int j = 0; j < room->link_count;j++) {
-			ft_printf("Room: %s, ", room->links[j]->name);
-		}
-		ft_printf("\n");
-    }
 }
 
 t_room *get_room_by_name(t_graph *graph, char *name)
@@ -105,12 +63,6 @@ int create_link(t_room *a, t_room *b)
     a->link_count++;
     b->link_count++;
     return (1);
-}
-
-void print_main(t_main *main)
-{
-    ft_printf("Ants: %d\n", main->ants);
-    print_graph(main->graph);
 }
 
 int start_with(char *str, char *prefix)

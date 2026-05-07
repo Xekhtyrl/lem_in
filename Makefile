@@ -2,7 +2,7 @@ CC := gcc
 
 NAME := lem_in
 
-CFLAGS := -Wall -Wextra -Werror -g -fsanitize=address
+CFLAGS := -Wall -Wextra -Werror -Wunused-function -g #-fsanitize=address
 
 
 LIBFT_DIR = includes/libft
@@ -11,8 +11,9 @@ LIBFT_LIB = $(LIBFT_DIR)/libft.a
 INC_FLAGS := -I includes -I $(LIBFT_DIR)/headers
 
 SRCS := parsing.c main.c \
-        utils.c connectivity.c bfs.c list.c \
-		algo.c dinic.c dinic_utils.c print_utils.c free_utils.c
+        utils.c launch_ants.c connectivity.c bfs.c list.c \
+		pathfinding.c dinic.c dinic_utils.c dinic_result_creation.c \
+		print_utils.c free_utils.c
 
 SRC_DIR = src/
 OBJ_DIR = obj/

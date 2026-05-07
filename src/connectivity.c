@@ -30,8 +30,5 @@ int check_connectivity(t_graph *graph)
 		ft_printf("Error: No path exists between start and end rooms.\n");
 		return 0;
 	}
-
-	ft_printf("a way was found, with %d nodes. \n", result);
-
 	return result;
 }

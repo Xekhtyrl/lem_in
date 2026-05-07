@@ -18,20 +18,29 @@ static int depth_first_search(int** mat, int curr, int end, int flow, int* level
 	return 0;
 }
 
-int dinic_max_flow(int** mat, int curr, int end, int *dist){
+t_result* dinic_max_flow(int** mat, int curr, int end, t_main* main, int** origin){
 	int total_flow = 0;
 	int *level = malloc(sizeof(int) * (end + 1));
+	t_result* res = NULL;
 
 	if (!level)
-		return -1;
-	while (bfs_matrix(mat, curr, end, level, dist)){
+		return NULL;
+	while (bfs_matrix(mat, curr, end, level)){
 		while (true) {
 			int flow = depth_first_search(mat, curr, end, INT_MAX, level);
 			if (flow == 0)
 				break;
 			total_flow += flow;
 		}
+		t_path* paths = calloc(sizeof(t_path), total_flow);
+		get_paths(paths, mat, main, total_flow, origin);
+		int turns = count_turns(paths, total_flow, main->ants);
+		res = add_result(res, paths, turns, total_flow);
+		if (!res) {
+			free(level);
+			return NULL;
+		}
 	}
 	free(level);
-	return total_flow;
+	return res;
 }

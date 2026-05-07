@@ -1,6 +1,6 @@
 #include "lem_in.h"
 
-void init_main(t_main *main)
+static void init_main(t_main *main)
 {
     main->graph.rooms = NULL;
     main->graph.room_count = 0;
@@ -24,16 +24,14 @@ int	main()
         free_graph(&main.graph);
         return 1;
     }
-	int path_nbr = 0;
-	t_path* paths = find_n_paths(&main, &path_nbr);
-	if (!paths){
+	t_result* res = find_n_paths(&main);
+	if (!res){
 		free_graph(&main.graph);
 		return 1;
 	}
-
-	send_ants(&main, paths, path_nbr);
-	free_paths(paths, path_nbr);
-    // print_main(&main);
+	send_ants(&main, res->paths, res->path_nbr);
+	free_result(res);
+	// print_main(&main);
 
     free_graph(&main.graph);
     return 0;

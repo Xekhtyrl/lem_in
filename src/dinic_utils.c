@@ -37,31 +37,3 @@ int **nodes_to_matrix(t_graph* graph, int*** copy){
 	mat[graph->end->index] = ft_calloc(sizeof(int), graph->room_count);
 	return mat;
 }
-
-int path_cost_overload(int **costs, int new_cost, int new_size, int ants) {
-	int total = 0;
-	int* new_tab = ft_calloc(sizeof(int), new_size);
-	if (!new_tab)
-		return 0;
-	for (int i = 0; i < new_size - 1; i++){
-		if ((*costs)[i] < new_cost)
-			total += (new_cost - (*costs)[i]);
-		new_tab[i] = (*costs)[i];
-	}
-	new_tab[new_size - 1] = new_cost;
-	if (new_size > 1)
-		free(*costs);
-	*costs = new_tab;
-	return total > ants;
-	
-}
-
-int *get_distances(t_graph* graph) {
-	int *distances = malloc(sizeof(int) * graph->room_count);
-	if (!distances)
-		return NULL;
-	for (int i = 0; i < graph->room_count; i++) {
-		distances[graph->rooms[i]->index] = graph->rooms[i]->distance;
-	}
-	return distances;
-}
