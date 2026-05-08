@@ -2,7 +2,7 @@ CC := gcc
 
 NAME := lem_in
 
-CFLAGS := -Wall -Wextra -Werror -Wunused-function -g #-fsanitize=address
+CFLAGS := -Wall -Wextra -Werror -Wunused-function -g -fsanitize=address
 
 
 LIBFT_DIR = includes/libft
