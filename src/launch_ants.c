@@ -16,7 +16,14 @@ static char* make_ant_str(int ants_index, char* room) {
 
 static int move_ants_in_path(t_farmlist* curr, char **str, int* end_total, t_path* path) {
 	if (curr->occupant == -1 || curr->room->type == END)
+	{
+		if (curr->occupant != -1 && curr->room->type == END)
+		{
+			*end_total += 1;
+			path->flow_in -= 1;
+		}
 		return 1;
+	}
 	else
 		if (!move_ants_in_path(curr->next, str, end_total, path))
 			return 0;
