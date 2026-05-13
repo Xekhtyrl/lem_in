@@ -79,8 +79,6 @@ int start_with(char *str, char *prefix)
 
 int	ft_atoi_ants(char *str, int *num)
 {
-	// int			error;
-	// char		c;
 	int sign = 1;
 
 	if (*str == '-')

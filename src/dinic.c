@@ -32,7 +32,7 @@ t_result* dinic_max_flow(int** mat, int curr, int end, t_main* main, int** origi
 				break;
 			total_flow += flow;
 		}
-		t_path* paths = calloc(sizeof(t_path), total_flow);
+		t_path* paths = ft_calloc(sizeof(t_path), total_flow);
 		get_paths(paths, mat, main, total_flow, origin);
 		int turns = count_turns(paths, total_flow, main->ants);
 		res = add_result(res, paths, turns, total_flow);
