@@ -196,5 +196,6 @@ int	parsing(t_main *main)
 	if (!line)
 		return (1);
 	free(line);
+	get_next_line(0, 1);
 	return (1);
 }
