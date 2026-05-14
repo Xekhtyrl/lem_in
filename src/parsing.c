@@ -65,8 +65,6 @@ static int parse_room_line(char *line, t_main *main, int line_count, t_room_type
 	int x, y;
 	if (!ft_atoi_ants(line + i, &x)) {
 		ft_printf("Invalid X coordinate at line %d\n", line_count);
-		// free(line);
-		// line = NULL;
 		free(name);
 		return (0);
 	}

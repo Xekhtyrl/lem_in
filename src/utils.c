@@ -12,7 +12,7 @@ int add_room_to_graph(t_main *main, t_room *room)
         new_rooms[i] = graph->rooms[i];
     }
     new_rooms[graph->room_count] = room;
-    // if (graph->rooms)
+    if (graph->rooms)
         free(graph->rooms);
 	graph->rooms = new_rooms;
 	graph->room_count++;
@@ -79,8 +79,6 @@ int start_with(char *str, char *prefix)
 
 int	ft_atoi_ants(char *str, int *num)
 {
-	// int			error;
-	// char		c;
 	int sign = 1;
 
 	if (*str == '-')

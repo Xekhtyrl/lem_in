@@ -82,9 +82,6 @@ typedef struct s_result {
 
 /********    parsing.c    ********/
 
-char		ft_mute_char(int fd, char muted, int type);
-// int			ft_redirect_char(char a, int fd, t_map *map);
-// int			ft_main_pars(int fd, t_map *map);
 int	parsing(t_main *main);
 
 /********    utils.c    ********/

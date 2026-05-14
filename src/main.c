@@ -31,7 +31,6 @@ int	main()
 	}
 	send_ants(&main, res->paths, res->path_nbr);
 	free_result(res);
-	// print_main(&main);
 
     free_graph(&main.graph);
     return 0;
